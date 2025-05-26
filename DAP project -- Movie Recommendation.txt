@@ -1,0 +1,50 @@
+DAP project -- Movie Recommendation System --
+
+IDEA làm dự án: sẽ là một hệ thống cho phép một người dùng có thể đăng nhập vào ( dữ liệu đăng nhập sẽ được lưu dưới dạng file json) và khi đăng nhập vào sẽ có các chức năng như là đánh giá film ( file này sẽ lưu vào dưới dạng csv ), chứ năng đưa ra đề xuất dựa trên các gerne đã chọn ( vd khi bấm vào nút đề xuất đi nó sẽ dùng cả cbf và cb để đưa ra đề xuất cho ng dùng, và có các nút khác để chọn gerne như kinh dị hoặc vui vẻ hoạt hình), nó sẽ như là web đánh giá film là ng dùng có thể đưa ra đánh giá film và khi đã đánh giá thì nó sẽ lưu lại dữ liệu đó ( mường tượng 5 ng vào đánh giá đi thì nó sẽ lưu lại dữ liệu 5 bộ film đó và khi ng thứ 6 vô search recommend thì nó sẽ đưa ra đề xuất về các film đấy) ( đây là cách hoạt động của cb) còn cbf thì nó sẽ hoạt động theo kiểu là 1 mạng lưới vd Vũ coi phim a xong vũ muốn coi một film nào đó nó giống phim vừa coi thì nó sẽ đưa ra các đề xuất liên quan tới phim vừa rồi ( và cx có thể search các yếu tố liên quan như tác giả bộ phim, nhà sản xuất ra ( tại sao nhà sản xuất thì vì vd như marvel có các phim từ 1 nhà ra), diễn viên bộ phim đó) 
+
+Bước đầu thì trước mắt ta sẽ xử lý dữ liệu:
+- file đầu tiên sẽ là ratings.csv ( sẽ có dữ liệu đánh giá sẵn từ dataset và khi đăng nhập vào hệ thống ta sẽ có thể tự đánh giá các bộ phim có sẵn ) 
+
+file này sẽ gồm các cột : userid, movieid, rating
+
+- file thứ hai sẽ là movies.csv ( sẽ được dùng cho content based filltering, đa dạng hóa đề xuất) 
+ 
+file này sẽ gồm các cột movieid, title, genres, actors, director, producer
+
+- file thứ ba sẽ là file dangnhap.json( file này sẽ là file dùng để đăng nhập vào hệ thống đề xuất)
+
+file này sẽ gồm các key như là loginid,pass
+
+
+các bước xử lý dữ liệu:
+bước 1 làm sạch ( ta sẽ xử lý dữ liệu bị thiếu, trùng lặp)
+
+Bước 2 xử lý gernes bằng one-hot encoding chuyển hóa các thể loại thành 1 0 1
+
+Bước 3 tích xuất dữ liệu dùng cho TF-IDF
+
+và biến nội dung như là actors, director, producer thành vector số thực
+
+bước 4 là sẽ tính cosine similarity ( nói tính v thôi chứ nó tự làm hết à ) 
+bước này giúp ta tạo 1 ma trận similarity bằng độ giống nhau giữa 2 phim 
+kiểu nó sẽ đưa ra như attack on titan và tom and jerry sẽ bằng 0 điểm, tom and jerry và garfield sẽ là 3 điểm 
+kiểu kiểu v
+
+Tiếp theo sẽ là bước train model 
+
+1 sẽ là train CF sử dụng mô hình SVD
+
+dùng thư viện 
+from surprise import SVD, Dataset, Reader
+
+2 sẽ là train CBF sử dụng các vector để tính ra mức tương đồng
+
+sử dụng
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.metrics.pairwise import cosine_similarity
+from scipy.sparse import hstack
+
+3 sẽ là train hybrid
+
+bước cuối sẽ là bước deploy trên steamlit
