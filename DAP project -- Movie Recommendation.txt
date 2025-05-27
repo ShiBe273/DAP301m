@@ -1,50 +1,127 @@
-DAP project -- Movie Recommendation System --
+🎬 DAP Project — Movie Recommendation System
+💡 Ý tưởng dự án
+Chúng tôi xây dựng một hệ thống gợi ý phim cá nhân hóa cho người dùng. Người dùng có thể đăng nhập, đánh giá phim, và nhận đề xuất phim phù hợp dựa trên sở thích và hành vi đã thể hiện.
 
-IDEA làm dự án: sẽ là một hệ thống cho phép một người dùng có thể đăng nhập vào ( dữ liệu đăng nhập sẽ được lưu dưới dạng file json) và khi đăng nhập vào sẽ có các chức năng như là đánh giá film ( file này sẽ lưu vào dưới dạng csv ), chứ năng đưa ra đề xuất dựa trên các gerne đã chọn ( vd khi bấm vào nút đề xuất đi nó sẽ dùng cả cbf và cb để đưa ra đề xuất cho ng dùng, và có các nút khác để chọn gerne như kinh dị hoặc vui vẻ hoạt hình), nó sẽ như là web đánh giá film là ng dùng có thể đưa ra đánh giá film và khi đã đánh giá thì nó sẽ lưu lại dữ liệu đó ( mường tượng 5 ng vào đánh giá đi thì nó sẽ lưu lại dữ liệu 5 bộ film đó và khi ng thứ 6 vô search recommend thì nó sẽ đưa ra đề xuất về các film đấy) ( đây là cách hoạt động của cb) còn cbf thì nó sẽ hoạt động theo kiểu là 1 mạng lưới vd Vũ coi phim a xong vũ muốn coi một film nào đó nó giống phim vừa coi thì nó sẽ đưa ra các đề xuất liên quan tới phim vừa rồi ( và cx có thể search các yếu tố liên quan như tác giả bộ phim, nhà sản xuất ra ( tại sao nhà sản xuất thì vì vd như marvel có các phim từ 1 nhà ra), diễn viên bộ phim đó) 
+Hệ thống sẽ sử dụng kết hợp giữa:
 
-Bước đầu thì trước mắt ta sẽ xử lý dữ liệu:
-- file đầu tiên sẽ là ratings.csv ( sẽ có dữ liệu đánh giá sẵn từ dataset và khi đăng nhập vào hệ thống ta sẽ có thể tự đánh giá các bộ phim có sẵn ) 
+✅ Collaborative Filtering (CF) – gợi ý dựa trên hành vi người dùng
 
-file này sẽ gồm các cột : userid, movieid, rating
+✅ Content-Based Filtering (CBF) – gợi ý dựa trên nội dung phim
 
-- file thứ hai sẽ là movies.csv ( sẽ được dùng cho content based filltering, đa dạng hóa đề xuất) 
- 
-file này sẽ gồm các cột movieid, title, genres, actors, director, producer
+✅ Hybrid Recommender – kết hợp CF và CBF để đưa ra đề xuất tối ưu
 
-- file thứ ba sẽ là file dangnhap.json( file này sẽ là file dùng để đăng nhập vào hệ thống đề xuất)
+🧩 Tính năng hệ thống
+🔐 Đăng nhập người dùng
+Thông tin tài khoản được lưu trong file dangnhap.json
 
-file này sẽ gồm các key như là loginid,pass
+Gồm các trường: loginid, password
 
+Sau khi đăng nhập thành công, hệ thống sẽ ghi nhận userId để liên kết đánh giá
 
-các bước xử lý dữ liệu:
-bước 1 làm sạch ( ta sẽ xử lý dữ liệu bị thiếu, trùng lặp)
+⭐ Đánh giá phim
+Người dùng có thể chọn phim từ danh sách có sẵn và đánh giá (số sao)
 
-Bước 2 xử lý gernes bằng one-hot encoding chuyển hóa các thể loại thành 1 0 1
+Mỗi đánh giá sẽ được lưu vào file ratings.csv
 
-Bước 3 tích xuất dữ liệu dùng cho TF-IDF
+Các đánh giá mới sẽ ảnh hưởng đến mô hình gợi ý CF trong các lần huấn luyện sau
 
-và biến nội dung như là actors, director, producer thành vector số thực
+🎯 Gợi ý phim (recommendation)
+Gợi ý phim theo genres: khi người dùng chọn thể loại như Kinh dị, Hoạt hình, Hành động...
 
-bước 4 là sẽ tính cosine similarity ( nói tính v thôi chứ nó tự làm hết à ) 
-bước này giúp ta tạo 1 ma trận similarity bằng độ giống nhau giữa 2 phim 
-kiểu nó sẽ đưa ra như attack on titan và tom and jerry sẽ bằng 0 điểm, tom and jerry và garfield sẽ là 3 điểm 
-kiểu kiểu v
+Hệ thống sử dụng mô hình:
 
-Tiếp theo sẽ là bước train model 
+CBF: tìm phim tương tự nội dung (diễn viên, nhà sản xuất, đạo diễn, thể loại)
 
-1 sẽ là train CF sử dụng mô hình SVD
+CF: gợi ý phim được đánh giá cao bởi người dùng có hành vi giống mình
 
-dùng thư viện 
+Hybrid: kết hợp điểm số giữa CBF và CF
+
+📦 Cấu trúc dữ liệu
+ratings.csv
+Dữ liệu đánh giá người dùng, dùng cho CF
+| userId | movieId | rating |
+|--------|---------|--------|
+
+movies.csv
+Dữ liệu thông tin phim, dùng cho CBF
+| movieId | title | genres | actors | director | producer |
+
+dangnhap.json
+Thông tin đăng nhập
+
+json
+Sao chép
+Chỉnh sửa
+{
+  "vuminh": { "password": "1234", "id": 1 },
+  "hoangvu": { "password": "abcd", "id": 2 }
+}
+🧹 Các bước xử lý dữ liệu
+Bước 1: Làm sạch dữ liệu
+Loại bỏ các dòng NaN, trùng lặp trong ratings.csv, movies.csv
+
+Bước 2: One-hot encoding genres
+Thể loại genres chuyển thành vector nhị phân như [1, 0, 1, 0, ...] để mô hình có thể xử lý
+
+Bước 3: TF-IDF + vector hóa nội dung
+Gộp các trường: actors, director, producer thành nội dung phim
+
+Dùng TF-IDF để chuyển văn bản thành vector số thực
+
+Bước 4: Cosine similarity
+Tính độ tương đồng giữa các phim
+
+Tạo ma trận similarity_matrix[i][j] thể hiện mức độ giống nhau giữa phim i và j
+
+🤖 Bước train mô hình
+1. Train CF – Collaborative Filtering (SVD)
+
 from surprise import SVD, Dataset, Reader
+Huấn luyện dựa trên dữ liệu ratings.csv
 
-2 sẽ là train CBF sử dụng các vector để tính ra mức tương đồng
+Dự đoán điểm cho các phim người dùng chưa xem
 
-sử dụng
+2. Train CBF – Content-Based Filtering
+
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import hstack
+Tính ma trận tương đồng dựa trên nội dung phim
 
-3 sẽ là train hybrid
+3. Hybrid Model
+Kết hợp score = α * CF_score + (1 - α) * CBF_score
 
-bước cuối sẽ là bước deploy trên steamlit
+Có thể thay đổi hệ số α để ưu tiên CBF hoặc CF
+
+☁️ Phần mở rộng: Lưu dữ liệu vào PostgreSQL
+Chuyển đổi hệ thống sang sử dụng PostgreSQL database thay vì file .csv:
+
+Bảng	Trường chính	Mô tả
+users	user_id, username, password	Thông tin người dùng
+movies	movie_id, title, genres, actors, director, producer	Dữ liệu phim
+ratings	rating_id, user_id, movie_id, rating, timestamp	Đánh giá phim của người dùng
+
+💡 Điều này giúp hệ thống mở rộng lên nhiều người dùng, gợi ý thời gian thực qua API, tránh mất dữ liệu.
+
+🚀 Deploy trên Streamlit
+Giao diện gồm:
+
+Form đăng nhập
+
+Giao diện đánh giá phim
+
+Nút “Gợi ý phim”
+
+Bộ lọc thể loại (Checkbox hoặc Dropdown)
+
+
+streamlit run dashboard.py
+✅ Tổng kết
+Thành phần	Công nghệ sử dụng
+Đăng nhập	JSON (hoặc PostgreSQL)
+Đánh giá	CSV hoặc DB
+Mô hình gợi ý	SVD (CF), TF-IDF + cosine (CBF)
+Giao diện	Streamlit
+Lưu trữ	CSV hoặc PostgreSQL
