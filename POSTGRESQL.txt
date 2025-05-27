@@ -1,0 +1,44 @@
+## 🎯 **1. Dữ liệu phim phù hợp với PostgreSQL**
+
+* Có **cấu trúc rõ ràng**: `movies`, `users`, `ratings`
+* Cần JOIN nhiều bảng → phù hợp với **cơ sở dữ liệu quan hệ**
+* Dữ liệu như `genres`, `actors` có thể dùng `ARRAY` hoặc `JSONB`
+
+---
+
+## 🥇 **2. Lý do chọn PostgreSQL**
+
+| Ưu điểm                      | Giải thích                                           |
+| ---------------------------- | ---------------------------------------------------- |
+| ✅ Hỗ trợ SQL mạnh            | Truy vấn lọc phim, điểm trung bình, thể loại dễ dàng |
+| ✅ Hỗ trợ dữ liệu phức tạp    | Có `ARRAY`, `JSONB`, ENUM... cho metadata phim       |
+| ✅ Tương thích tốt với Python | Kết nối dễ với `pandas`, `Streamlit`, `SQLAlchemy`   |
+| ✅ Mã nguồn mở, miễn phí      | Dễ triển khai, không giới hạn                        |
+| ✅ Triển khai cloud đơn giản  | Dễ dùng với Supabase, Heroku, Render...              |
+
+---
+
+## 🔁 **3. So sánh với các DB khác**
+
+| Database | Hạn chế trong dự án này                                     |
+| -------- | ----------------------------------------------------------- |
+| SQLite   | Chỉ dùng tốt cho demo local, không phù hợp nhiều người dùng |
+| MySQL    | Thiếu hỗ trợ tốt cho `ARRAY`, `JSONB`                       |
+| MongoDB  | Không JOIN hiệu quả giữa người dùng – phim – đánh giá       |
+| Firebase | Không hỗ trợ SQL, khó lọc hoặc thống kê nâng cao            |
+| Redis    | Chỉ lưu cache tạm, không phải hệ quản trị dữ liệu đầy đủ    |
+
+---
+
+## ✅ **Kết luận**
+
+> **PostgreSQL là lựa chọn lý tưởng cho hệ thống gợi ý phim** vì:
+
+* Quản lý tốt dữ liệu có cấu trúc và phức tạp
+* Truy vấn mạnh mẽ
+* Tích hợp tốt với Python/ML
+* Dễ mở rộng và triển khai thực tế
+
+---
+
+👉 Nếu bạn muốn mình viết thêm schema, script hoặc hướng dẫn triển khai cloud, chỉ cần nói **“Bắt đầu PostgreSQL cho hệ thống gợi ý”** nhé!
