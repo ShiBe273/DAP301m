@@ -30,6 +30,8 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "user_id" not in st.session_state:
     st.session_state.user_id = None
+if "change_pass_mode" not in st.session_state:
+    st.session_state.change_pass_mode = False  # 👈 Thêm dòng này để tránh lỗi
 
 # === Trang đăng nhập / đăng ký ===
 
@@ -132,16 +134,20 @@ def login_page():
     user_id_input = st.text_input("🔑 Nhập User ID (số):", key="user_id_input")
     password_input = st.text_input("🔒 Nhập mật khẩu:", type="password", key="password_input")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3= st.columns(3)
     with col1:
         if st.button("Đăng nhập"):
             handle_login(user_id_input, password_input)
     with col2:
         if st.button("Đăng ký"):
             handle_register(user_id_input, password_input)
+    with col3:
+        if st.button("🔐 Đổi mật khẩu"):
+            st.session_state.change_pass_mode = True
+            st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)  # đóng centered-box
-
+    
     # === 3 logo nhỏ ở góc phải dưới ===
     st.markdown(f"""
         <div style="
@@ -158,6 +164,51 @@ def login_page():
         </div>
     """, unsafe_allow_html=True)
 
+def change_password_page():
+    st.markdown('<div class="centered-box">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">🔐 ĐỔI MẬT KHẨU</div>', unsafe_allow_html=True)
+
+    with st.form("change_pass_form"):
+        user_input = st.text_input("🔑 Nhập User ID (số):", key="change_user_id")
+        old_pass = st.text_input("🔒 Mật khẩu hiện tại:", type="password", key="old_pass")
+        new_pass = st.text_input("🆕 Mật khẩu mới:", type="password", key="new_pass")
+        confirm_pass = st.text_input("✅ Xác nhận mật khẩu mới:", type="password", key="confirm_pass")
+
+        submitted = st.form_submit_button("Cập nhật mật khẩu")
+
+        if submitted:
+            if not user_input.isdigit():
+                st.error("User ID phải là số.")
+                return
+            if new_pass != confirm_pass:
+                st.error("Mật khẩu mới không khớp.")
+                return
+            user_id = int(user_input)
+
+            if os.path.exists(USERS_CSV):
+                users_df = pd.read_csv(USERS_CSV)
+                users_df['userId'] = users_df['userId'].astype(int)
+            else:
+                st.error("Chưa có người dùng nào.")
+                return
+
+            if user_id in users_df['userId'].values:
+                stored_password = users_df.loc[users_df['userId'] == user_id, 'password'].values[0]
+                if str(old_pass) == str(stored_password):
+                    users_df.loc[users_df['userId'] == user_id, 'password'] = new_pass
+                    users_df.to_csv(USERS_CSV, index=False)
+                    st.success("✅ Mật khẩu đã được cập nhật!")
+                else:
+                    st.error("❌ Mật khẩu hiện tại không đúng.")
+            else:
+                st.error("User ID không tồn tại.")
+
+    # Nút quay lại login
+    if st.button("🔙 Quay lại đăng nhập"):
+        st.session_state.change_pass_mode = False
+        st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 USERS_CSV = r"C:\Users\ACER\Desktop\Dataset\DATA\Movie\Moive lens\ml-latest-small\ml-latest-small\users.csv"
 
@@ -213,6 +264,7 @@ def handle_register(user_input, password_input):
         st.session_state.logged_in = True
         st.session_state.user_id = user_id
         st.success(f"Đăng ký thành công với User {user_id}✅ ")
+
 
 
 
@@ -544,5 +596,7 @@ def main_page():
 # === Routing ===
 if st.session_state.logged_in:
     main_page()
+elif st.session_state.change_pass_mode:
+    change_password_page()
 else:
     login_page()
